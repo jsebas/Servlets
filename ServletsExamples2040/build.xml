@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!-- Santiago Gavilanes J -->
+
+<project name="LoginExample" default="war" basedir=".">
+
+	<target name="init">
+		<propertyfile file="build.properties" />
+		<!-- Project directories. -->
+		<property name="name" value="site" />
+		<property name="build" value="build" />
+		<property name="dist" value="dist" />
+		<property name="src" value="src" />
+		<property name="lib" value="lib" />
+		<property name="war.file" value="${dist}/${name}.war" />
+		<property name="deploy.dir" value="/Users/CrisMacBook/Documents/Server/jboss-as-7.1.1.Final/standalone/deployments" />
+
+		<!-- Compiler directives.-->
+
+		<property name="optimize" value="off" />
+		<property name="deprecation" value="on" />
+		<property name="debug" value="on" />
+
+		<tstamp />
+
+		<path id="project.classpath">
+			<fileset dir="${lib}">
+				<include name="servlet-api.jar" />
+				<include name="javax.servlet.jsp.jar" />
+				<include name="log4j.jar" />
+			</fileset>
+		</path>
+
+	</target>
+
+	<target name="clean" depends="init">
+		<delete dir="${build}" />
+		<delete dir="${dist}" />
+	</target>
+
+	<target name="compile" depends="init">
+		<mkdir dir="${build}" />
+		<javac srcdir="${src}" destdir="${build}" includeantruntime="false" includes="**/*.java" debug="${debug}" deprecation="${deprecation}" optimize="${optimize}">
+			<classpath refid="project.classpath" />
+		</javac>
+	</target>
+
+	<target name="war" depends="compile">
+		<mkdir dir="${dist}" />
+		<war warfile="${war.file}" webxml="conf/web.xml" update="true">
+			<classes dir="${build}" />
+			<fileset dir="war">
+				<include name="**/*" />
+			</fileset>
+			<lib dir="${lib}" >
+				<exclude name="servlet-api.jar" />
+				<exclude name="log4j.jar" />	
+			</lib>
+				
+		</war>
+	</target>
+
+
+	<target name="deploy-war" depends="war">
+		<copy file="${war.file}" todir="${deploy.dir}" />
+	</target>
+</project>
